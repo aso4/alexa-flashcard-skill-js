@@ -171,15 +171,15 @@ var questions = [{
 
 var answers = [1, 3, 2, 2, 1, 4, 3, 3, 1, 3, 4, 2, 2, 2, 3, 1, 3, 4, 1,
     3, 1, 2, 4, 4, 1, 2, 3, 4, 2, 1, 4, 2, 3, 1, 4, 3, 1
-]
+];
 
 var getSample = function() {
     sample = Math.floor(Math.random()*questions.length);
     answerIndex = answers[sample];
     question = cards[sample].question;
     answers = cards[sample].answers;
-    answer = cards[sample].answers[answerIndex];
-    return sample, answerIndex, question, answers, answer;
+    answer = cards[sample].answers[answerIndex-1];
+    return [sample, answerIndex, question, answers, answer];
 };
 
 
