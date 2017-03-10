@@ -1,0 +1,39 @@
+AnswerIntent the answer is {Answer}
+AnswerIntent my answer is {Answer}
+AnswerIntent is it {Answer}
+AnswerIntent {Answer} is my answer
+AnswerOnlyIntent {Answer}
+
+AMAZON.StartOverIntent new flashcard
+AMAZON.StartOverIntent start new flashcard
+AMAZON.StartOverIntent give me a new flashcard
+AMAZON.StartOverIntent begin
+
+DontKnowIntent i don't know
+DontKnowIntent don't know
+DontKnowIntent skip
+DontKnowIntent i don't know that
+DontKnowIntent who knows
+DontKnowIntent i don't know this question
+DontKnowIntent i don't know that one
+DontKnowIntent dunno
+DontKnowIntent not sure
+
+LaunchIntent main menu
+LaunchIntent open main menu
+LaunchIntent start over
+LaunchIntent reset
+
+AMAZON.RepeatIntent repeat the question
+AMAZON.RepeatIntent repeat
+AMAZON.RepeatIntent say the question again
+AMAZON.RepeatIntent what was the question
+AMAZON.RepeatIntent say it again
+
+AMAZON.HelpIntent help
+AMAZON.HelpIntent open help menu
+AMAZON.HelpIntent open help
+AMAZON.HelpIntent how to
+AMAZON.HelpIntent help menu
+AMAZON.HelpIntent i need help
+AMAZON.HelpIntent i want help
