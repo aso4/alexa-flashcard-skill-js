@@ -341,7 +341,7 @@ function handleGetHelpRequest(intent, session, callback) {
 function handleFinishSessionRequest(intent, session, callback) {
     // End the session with a "Good bye!" if the user wants to quit the game
     callback(session.attributes,
-        buildSpeechletResponseWithoutCard("Good bye!", "", true));
+        buildSpeechletResponseWithoutCard("you have chosen to stop. session has ended", "", true));
 }
 
 function isAnswerSlotValid(intent) {
@@ -397,3 +397,86 @@ function buildResponse(sessionAttributes, speechletResponse) {
         response: speechletResponse
     };
 }
+
+
+function handleAnswerRequest(intent, session, callback) {
+
+  @application_id = @echo_request.application_id
+  deck = Flashcards.new
+
+  @newQuestion = deck.getSample
+
+  if intent == "LaunchIntent"
+    r.end_session = true
+    r.spoken_response = "Welcome to Ruby Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.";
+  else if intent == "AMAZON.StartOverIntent"
+
+    r.end_session = false
+    r.spoken_response = "New card. Here is your next question: #{@newQuestion[2]}." +
+    "What is the correct answer? #{@newQuestion[3].join(", ")}. You can say one, two, three, or four. For more response options, say help.";
+    r.reprompt_text = "sorry, I couldnt catch what you were saying." +
+    "say the answer in a sentence. for example, the answer is one." +
+    "you can also say i don’t know, skip, or repeat the question"
+    add_session_attributes(r)
+  else if intent == "AMAZON.HelpIntent"
+    tracker.build_event(category: 'intent', action: intent, value: 9).track!
+    r.end_session = false
+    @newQuestion = deck.getSample
+    r.spoken_response = "help menu. to go to the main menu, say main menu or open main menu.
+    to open a flashcard, you can say start, new flashcard, start new flashcard, or give me a new flashcard.
+    once a flashcard is opened, you can say one, two, three or four.
+    you can also say the answer in sentence form.
+    for example, the answer is one, my answer is two, is it three?, or four is my answer.
+    if you don’t know the answer or would like to skip, you can say i don’t know or skip.
+    to repeat the question, say repeat, repeat the the question, say it again, or say the question again."
+    add_session_attributes(r)
+  else if intent == "AnswerIntent" || intent == "AnswerOnlyIntent" || intent == "AMAZON.RepeatIntent" || intent == "DontKnowIntent"
+    r.end_session = false
+    if @echo_request.attributes["repeatQuestion"] != nil
+      if intent == "AMAZON.RepeatIntent"
+        tracker.build_event(category: 'intent', action: intent, value: 6).track!
+        r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"])
+        r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"])
+        r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"])
+        r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"])
+        r.spoken_response = "#{@echo_request.attributes["repeatQuestion"]}"
+
+      else if @echo_request.attributes["correctAnswerIndex"] == @echo_request.slots.answer.to_i
+        tracker.build_event(category: 'intent', action: intent, value: 2).track!
+        @newQuestion = deck.getSample
+        r.spoken_response = "That is correct! Next question: #{@newQuestion[2]}.
+        What is the correct answer? #{@newQuestion[3].join(", ")}"
+        r.reprompt_text = "sorry, I couldn't catch what you were saying.
+        try saying the answer in a sentence. for example, the answer is one.
+        you can also say i don’t know, skip, or repeat the question"
+        r.card_title = "Correct Response"
+        r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}"
+        add_session_attributes(r)
+
+      else if intent == "DontKnowIntent" #alexa doesn't understand what you're saying
+        tracker.build_event(category: 'intent', action: intent, value: 10).track!
+        r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"])
+        r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"])
+        r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"])
+        r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"])
+        r.spoken_response = "sorry, I couldn't catch what you were saying." +
+        "try saying the answer in a sentence. for example, the answer is one." +
+        "you can also say i don’t know, skip, or repeat the question"
+      else
+        @newQuestion = deck.getSample
+        tracker.build_event(category: 'intent', action: intent, value: 3).track!
+        r.spoken_response = "Sorry, that is incorrect. The answer is #{@echo_request.attributes["correctAnswerIndex"]}, #{@echo_request.attributes["correctAnswerText"]}.
+        Let's try another question: #{@newQuestion[2]}.
+        What is the correct answer? #{@newQuestion[3].join(", ")}"
+        r.reprompt_text = "sorry, I couldn't catch what you were saying.
+        try saying the answer in a sentence. for example, the answer is one.
+        you can also say i don’t know, skip, or repeat the question"
+        r.card_title = "Incorrect Response."
+        r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}"
+        add_session_attributes(r)
+
+    else
+      r.spoken_response = "ask me for a flashcard to begin. you can say new flashcard or help."
+
+  render json: r.without_card
+};
