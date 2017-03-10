@@ -19,108 +19,173 @@
  * When editing your questions pay attention to your punctuation. Make sure you use question marks or periods.
  * Make sure the first answer is the correct one. Set at least 4 answers, any extras will be shuffled in.
  */
-var questions = [
-    {
-        "If we videotaped you while you were sleeping, what would you hope you wouldn't do at night?": [
-            "Sleepwalk",
-            "Talk",
-            "Snore",
-            "Fart"
-        ]
+var questions = [{
+        question: "To create a second name for the variable or method.",
+        answers: ["alias", "begin", "else", "elsif"]
     },
     {
-        "What's something men do when they're having a midlife crisis?": [
-            "Buy motorcycle",
-            "Buy sports car",
-            "Cheat",
-            "Get a tattoo"
-        ]
+        question: "A command that appends two or more objects together.",
+        answers: ["break", "do", "and", "ensure"]
     },
     {
-        "What's something you could mention to a cannibal to stop him from eating you?": [
-            "I'm poisonous",
-            "I taste bad",
-            "That guy's tastier",
-            "I'm sick"
-        ]
+        question: "Designates code that must be run unconditionally at the beginning of the program before any other.",
+        answers: ["if", "BEGIN", "in", "case"]
     },
     {
-        "What's something a college kid has in his dorm room that his parents might object to?": [
-            "Porn",
-            "His professor",
-            "Drugs",
-            "A keg"
-        ]
+        question: "Gives an unconditional termination to a code block, and is usually placed with an argument.",
+        answers: ["elsif", "break", "class", "false"]
     },
     {
-        "What's something men wear that women think is sexy?": [
-            "Boxer shorts",
-            "Tuxedo or a suit",
-            "Tight pants or jeans",
-            "Cologne or after-shave"
-        ]
+        question: "starts a case statement; this block of code will output a result and end when it's terms are fulfilled, which are defined with when or else.",
+        answers: ["case", "begin", "class", "end"]
     },
     {
-        "What's a reason Tarzan might wear a black loincloth?": [
-            "For a funeral",
-            "Other one's dirty",
-            "Titillate Jane",
-            "Hide skid Marks"
-        ]
+        question: "Opens a class definition block, which can later be reopened and added to with variables and even functions.",
+        answers: ["ensure", "and", "alias", "class"]
     },
     {
-        "What's something you fill with air?": [
-            "Lungs",
-            "Tires",
-            "A ball",
-            "A balloon"
-        ]
+        question: "Used to define a function.",
+        answers: ["false", "for", "def", "if"]
     },
     {
-        "What's something a vampire might ask a dentist to do to his fangs?": [
-            "Clean them",
-            "Sharpen them",
-            "Whiten them",
-            "Ask for grills"
-        ]
+        question: "A boolean logic function that asks whether or not a targeted expression refers to anything recognizable in Ruby; i.e. literal object, local variable that has been initialized, method name visible from the current scope, etc.",
+        answers: ["for", "next", "defined?", "false"]
     },
     {
-        "If your underwear could talk, what would it say to you?": [
-            "Change me or wash me",
-            "Sexy or lookin good",
-            "Stop farting",
-            "Buy new ones"
-        ]
+        question: "Paired with end, this can delimit a code block, much like curly braces; however, curly braces retain higher precedence.",
+        answers: ["do", "retry", "rescue", "while"]
     },
     {
-        "If a man is in training for marriage, what's a word or phrase he should practice saying?": [
-            "I do",
-            "I love you",
-            "I'm sorry",
-            "Yes, dear"
-        ]
+        question: "Gives an 'otherwise' within a function, if-statement, or for-loop, i.e. if cats = cute, puts 'Yay!' else puts 'Oh, a cat.'",
+        answers: ["alias", "end", "else", "elsif"]
     },
     {
-        "A wife might say to her husband, 'OK, if you're going to wear a Speedo to the beach, I\'m going to wear  blank": [
-            "A mono kee knee",
-            "A muumuu",
-            "A string bikini",
-            "Nothing"
-        ]
+        question: "Much like else, but has a higher precedence, and is usually paired with terms.",
+        answers: ["ensure", "class", "def", "elsif"]
     },
     {
-        "What's something a man likes to see a woman bouncing on?": [
-            "Exercise ball",
-            "Trampoline",
-            "His lap",
-            "The bed"
-        ]
+        question: "Designates, via code block, code to be executed just prior to program termination.",
+        answers: ["or", "END", "while", "undef"]
+    },
+    {
+        question: "Marks the end of a while, until, begin, if, def, class, or other keyword-based, block-based construct.",
+        answers: ["super", "end", "self", "false"]
+    },
+    {
+        question: "Marks the final, optional clause of a begin/end block, generally in cases where the block also contains a rescue clause. The code in this term's clause is guaranteed to be executed, whether control flows to a rescue block or not.",
+        answers: ["if", "ensure", "for", "module"]
+    },
+    {
+        question: "denotes a special object, the sole instance of FalseClass. false and nil are the only objects that evaluate to Boolean falsehood in Ruby (informally, that cause an if condition to fail.)",
+        answers: ["ensure", "until", "false", "unless"]
+    },
+    {
+        question: "A loop constructor; used in for-loops.",
+        answers: ["for", "super", "while", "module"]
+    },
+    {
+        question: "Ruby's basic conditional statement constructor.",
+        answers: ["return", "rescue", "if", "while"]
+    },
+    {
+        question: "Used with for, helps define a for-loop.",
+        answers: ["if", "end", "else", "in"]
+    },
+    {
+        question: "Opens a library, or module, within a Ruby Stream.",
+        answers: ["module", "retry", "for", "class"]
+    },
+    {
+        question: "Bumps an iterator, or a while or until block, to the next iteration, unconditionally and without executing whatever may remain of the block.",
+        answers: ["true", "retry", "next", "self"]
+    },
+    {
+        question: "A special 'non-object'; it is, in fact, an object (the sole instance of NilClass), but connotes absence and indeterminacy. nil and false are the only two objects in Ruby that have Boolean falsehood (informally, that cause an if condition to fail).",
+        answers: ["nil", "module", "retry", "undef"]
+    },
+    {
+        question: "Boolean negation. i.e. not true # false, not 10 # false, not false # true.",
+        answers: ["rescue", "not", "self", "unless"]
+    },
+    {
+        question: "Boolean or. Differs from double pipe in that or has lower precedence.",
+        answers: ["super", "until", "while", "or"]
+    },
+    {
+        question: "Causes unconditional re-execution of a code block, with the same parameter bindings as the current execution.",
+        answers: ["super", "for", "if", "redo"]
+    },
+    {
+        question: "Designates an exception-handling clause that can occur either inside a begin<code>/<code>end block, inside a method definition (which implies begin), or in modifier position (at the end of a statement).",
+        answers: ["rescue", "return", "then", "true"]
+    },
+    {
+        question: "Inside a rescue clause, causes Ruby to return to the top of the enclosing code (the begin keyword, or top of method or block) and try executing the code again.",
+        answers: ["for", "retry", "in", "next"]
+    },
+    {
+        question: "Inside a method definition, executes the ensure clause, if present, and then returns control to the context of the method call. Takes an optional argument (defaulting to nil), which serves as the return value of the method. Multiple values in argument position will be returned in an array.",
+        answers: ["retry", "true", "return", "while"]
+    },
+    {
+        question: "The 'current object' and the default receiver of messages (method calls) for which no explicit receiver is specified. Which object plays the role of self depends on the context.",
+        answers: ["while", "then", "super", "self"]
+    },
+    {
+        question: "Called from a method, searches along the method lookup path (the classes and modules available to the current object) for the next method of the same name as the one being executed. Such method, if present, may be defined in the superclass of the object's class, but may also be defined in the superclass's superclass or any class on the upward path, as well as any module mixed in to any of those classes.",
+        answers: ["true", "super", "until", "when"]
+    },
+    {
+        question: "Optional component of conditional statements (if, unless, when). Never mandatory, but allows for one-line conditionals without semi-colons.",
+        answers: ["then", "while", "until", "retry"]
+    },
+    {
+        question: "The sole instance of the special class TrueClass. true encapsulates Boolean truth; however, <emph>all</emph> objects in Ruby are true in the Boolean sense (informally, they cause an if test to succeed), with the exceptions of false and nil.",
+        answers: ["break", "ensure", "module", "true"]
+    },
+    {
+        question: "Undefines a given method, for the class or module in which it's called. If the method is defined higher up in the lookup path (such as by a superclass), it can still be called by instances classes higher up.",
+        answers: ["when", "undef", "yield", "rescue"]
+    },
+    {
+        question: "The negative equivalent of if. i.e. unless y.score > 10 puts 'Sorry; you needed 10 points to win.' end.",
+        answers: ["yield", "end", "unless", "alias"]
+    },
+    {
+        question: "The inverse of while: executes code until a given condition is true, i.e., while it is not true. The semantics are the same as those of while.",
+        answers: ["until", "module", "retry", "case"]
+    },
+    {
+        question: "Same as case.",
+        answers: ["return", "self", "super", "when"]
+    },
+    {
+        question: "Takes a condition argument, and executes the code that follows (up to a matching end delimiter) while the condition is true.",
+        answers: ["for", "redo", "while", "yield"]
+    },
+    {
+        question: "Called from inside a method body, yields control to the code block (if any) supplied as part of the method call. If no code block has been supplied, calling yield raises an exception.",
+        answers: ["yield", "end", "class", "undef"]
     }
 ];
 
+var answers = [1, 3, 2, 2, 1, 4, 3, 3, 1, 3, 4, 2, 2, 2, 3, 1, 3, 4, 1,
+    3, 1, 2, 4, 4, 1, 2, 3, 4, 2, 1, 4, 2, 3, 1, 4, 3, 1
+]
+
+var getSample = function() {
+    sample = Math.floor(Math.random()*questions.length);
+    answerIndex = answers[sample];
+    question = cards[sample].question;
+    answers = cards[sample].answers;
+    answer = cards[sample].answers[answerIndex];
+    return sample, answerIndex, question, answers, answer;
+};
+
+
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
-exports.handler = function (event, context) {
+exports.handler = function(event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
@@ -130,11 +195,13 @@ exports.handler = function (event, context) {
          */
 
         if (event.session.application.applicationId !== "amzn1.echo-sdk-ams.app.05aecccb3-1461-48fb-a008-822ddrt6b516") {
-          context.fail("Invalid Application ID");
+            context.fail("Invalid Application ID");
         }
 
         if (event.session.new) {
-            onSessionStarted({requestId: event.request.requestId}, event.session);
+            onSessionStarted({
+                requestId: event.request.requestId
+            }, event.session);
         }
 
         if (event.request.type === "LaunchRequest") {
@@ -162,8 +229,8 @@ exports.handler = function (event, context) {
  * Called when the session starts.
  */
 function onSessionStarted(sessionStartedRequest, session) {
-    console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId +
+        ", sessionId=" + session.sessionId);
 
     // add any session init logic here
 }
@@ -172,8 +239,8 @@ function onSessionStarted(sessionStartedRequest, session) {
  * Called when the user invokes the skill without specifying what they want.
  */
 function onLaunch(launchRequest, session, callback) {
-    console.log("onLaunch requestId=" + launchRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onLaunch requestId=" + launchRequest.requestId +
+        ", sessionId=" + session.sessionId);
 
     getWelcomeResponse(callback);
 }
@@ -182,8 +249,8 @@ function onLaunch(launchRequest, session, callback) {
  * Called when the user specifies an intent for this skill.
  */
 function onIntent(intentRequest, session, callback) {
-    console.log("onIntent requestId=" + intentRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onIntent requestId=" + intentRequest.requestId +
+        ", sessionId=" + session.sessionId);
 
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
@@ -229,189 +296,10 @@ function onIntent(intentRequest, session, callback) {
  * Is not called when the skill returns shouldEndSession=true.
  */
 function onSessionEnded(sessionEndedRequest, session) {
-    console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId +
+        ", sessionId=" + session.sessionId);
 
     // Add any cleanup logic here
-}
-
-// ------- Skill specific business logic -------
-
-var ANSWER_COUNT = 4;
-var GAME_LENGTH = 5;
-var CARD_TITLE = "Can You Guess The Top Answer For These Family Feud Questions?"; // Be sure to change this for your skill.
-
-function getWelcomeResponse(callback) {
-    var sessionAttributes = {},
-        speechOutput = "I will ask you " + GAME_LENGTH.toString()
-            + " questions, try to get as many right as you can. Just say the number of the answer. Let's begin. ",
-        shouldEndSession = false,
-
-        gameQuestions = populateGameQuestions(),
-        // actual index: [3,2,4,1,3,1,4,2,1,4,2,1,4,3,2]
-        correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
-        roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
-
-        currentQuestionIndex = 0,
-        spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]])[0],
-        repromptText = "Question 1. " + spokenQuestion + " ",
-
-        i, j;
-
-    for (i = 0; i < ANSWER_COUNT; i++) {
-        repromptText += (i+1).toString() + ". " + roundAnswers[i] + ". "
-    }
-    speechOutput += repromptText;
-    sessionAttributes = {
-        "speechOutput": repromptText,
-        "repromptText": repromptText,
-        "currentQuestionIndex": currentQuestionIndex,
-        "correctAnswerIndex": correctAnswerIndex + 1,
-        "questions": gameQuestions,
-        "score": 0,
-        "correctAnswerText":
-            questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
-    };
-    callback(sessionAttributes,
-        buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
-}
-
-function populateGameQuestions() {
-    var gameQuestions = [];
-    var indexList = [];
-    var index = questions.length;
-
-    if (GAME_LENGTH > index){
-        throw "Invalid Game Length.";
-    }
-
-    for (var i = 0; i < questions.length; i++){
-        indexList.push(i);
-    }
-
-    // Pick GAME_LENGTH random questions from the list to ask the user, make sure there are no repeats.
-    for (var j = 0; j < GAME_LENGTH; j++){
-        var rand = Math.floor(Math.random() * index);
-        index -= 1;
-
-        var temp = indexList[index];
-        indexList[index] = indexList[rand];
-        indexList[rand] = temp;
-        gameQuestions.push(indexList[index]);
-    }
-
-    return gameQuestions;
-}
-
-function populateRoundAnswers(gameQuestionIndexes, correctAnswerIndex, correctAnswerTargetLocation) {
-    // Get the answers for a given question, and place the correct answer at the spot marked by the
-    // correctAnswerTargetLocation variable. Note that you can have as many answers as you want but
-    // only ANSWER_COUNT will be selected.
-    var answers = [],
-        answersCopy = questions[gameQuestionIndexes[correctAnswerIndex]][Object.keys(questions[gameQuestionIndexes[correctAnswerIndex]])[0]],
-        temp, i;
-
-    var index = answersCopy.length;
-
-    if (index < ANSWER_COUNT){
-        throw "Not enough answers for question.";
-    }
-
-    // Shuffle the answers, excluding the first element.
-    for (var j = 1; j < answersCopy.length; j++){
-        var rand = Math.floor(Math.random() * (index - 1)) + 1;
-        index -= 1;
-
-        var temp = answersCopy[index];
-        answersCopy[index] = answersCopy[rand];
-        answersCopy[rand] = temp;
-    }
-
-    // Swap the correct answer into the target location
-    for (i = 0; i < ANSWER_COUNT; i++) {
-        answers[i] = answersCopy[i];
-    }
-    temp = answers[0];
-    answers[0] = answers[correctAnswerTargetLocation];
-    answers[correctAnswerTargetLocation] = temp;
-    return answers;
-}
-
-function handleAnswerRequest(intent, session, callback) {
-    var speechOutput = "";
-    var sessionAttributes = {};
-    var gameInProgress = session.attributes && session.attributes.questions;
-    var answerSlotValid = isAnswerSlotValid(intent);
-    var userGaveUp = intent.name === "DontKnowIntent";
-
-    if (!gameInProgress) {
-        // If the user responded with an answer but there is no game in progress, ask the user
-        // if they want to start a new game. Set a flag to track that we've prompted the user.
-        sessionAttributes.userPromptedToContinue = true;
-        speechOutput = "There is no game in progress. Do you want to start a new game? ";
-        callback(sessionAttributes,
-            buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
-    } else if (!answerSlotValid && !userGaveUp) {
-        // If the user provided answer isn't a number > 0 and < ANSWER_COUNT,
-        // return an error message to the user. Remember to guide the user into providing correct values.
-        var reprompt = session.attributes.speechOutput;
-        var speechOutput = "Your answer must be a number between 1 and " + ANSWER_COUNT + ". " + reprompt;
-        callback(session.attributes,
-            buildSpeechletResponse(CARD_TITLE, speechOutput, reprompt, false));
-    } else {
-        var gameQuestions = session.attributes.questions,
-            correctAnswerIndex = parseInt(session.attributes.correctAnswerIndex),
-            currentScore = parseInt(session.attributes.score),
-            currentQuestionIndex = parseInt(session.attributes.currentQuestionIndex),
-            correctAnswerText = session.attributes.correctAnswerText;
-
-        var speechOutputAnalysis = "";
-
-        if (answerSlotValid && parseInt(intent.slots.Answer.value) == correctAnswerIndex) {
-            currentScore++;
-            speechOutputAnalysis = "correct. ";
-        } else {
-            if (!userGaveUp) {
-                speechOutputAnalysis = "wrong. "
-            }
-            speechOutputAnalysis += "The correct answer is " + correctAnswerIndex + ": " + correctAnswerText + ". ";
-        }
-        // if currentQuestionIndex is 4, we've reached 5 questions (zero-indexed) and can exit the game session
-        if (currentQuestionIndex == GAME_LENGTH - 1) {
-            speechOutput = userGaveUp ? "" : "That answer is ";
-            speechOutput += speechOutputAnalysis + "You got " + currentScore.toString() + " out of "
-                + GAME_LENGTH.toString() + " questions correct. Thank you for playing!";
-            callback(session.attributes,
-                buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
-        } else {
-            currentQuestionIndex += 1;
-            var spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]])[0];
-            // Generate a random index for the correct answer, from 0 to 3
-            correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT));
-            var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
-
-                questionIndexForSpeech = currentQuestionIndex + 1,
-                repromptText = "Question " + questionIndexForSpeech.toString() + ". " + spokenQuestion + " ";
-            for (var i = 0; i < ANSWER_COUNT; i++) {
-                repromptText += (i+1).toString() + ". " + roundAnswers[i] + ". "
-            }
-            speechOutput += userGaveUp ? "" : "That answer is ";
-            speechOutput += speechOutputAnalysis + "Your score is " + currentScore.toString() + ". " + repromptText;
-
-            sessionAttributes = {
-                "speechOutput": repromptText,
-                "repromptText": repromptText,
-                "currentQuestionIndex": currentQuestionIndex,
-                "correctAnswerIndex": correctAnswerIndex + 1,
-                "questions": gameQuestions,
-                "score": currentScore,
-                "correctAnswerText":
-                    questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
-            };
-            callback(sessionAttributes,
-                buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
-        }
-    }
 }
 
 function handleRepeatRequest(intent, session, callback) {
@@ -439,13 +327,13 @@ function handleGetHelpRequest(intent, session, callback) {
 
     // Do not edit the help dialogue. This has been created by the Alexa team to demonstrate best practices.
 
-    var speechOutput = "I will ask you " + GAME_LENGTH + " multiple choice questions. Respond with the number of the answer. "
-        + "For example, say one, two, three, or four. To start a new game at any time, say, start game. "
-        + "To repeat the last question, say, repeat. "
-        + "Would you like to keep playing?",
-        repromptText = "To give an answer to a question, respond with the number of the answer . "
-        + "Would you like to keep playing?";
-        var shouldEndSession = false;
+    var speechOutput = "I will ask you " + GAME_LENGTH + " multiple choice questions. Respond with the number of the answer. " +
+        "For example, say one, two, three, or four. To start a new game at any time, say, start game. " +
+        "To repeat the last question, say, repeat. " +
+        "Would you like to keep playing?",
+        repromptText = "To give an answer to a question, respond with the number of the answer . " +
+        "Would you like to keep playing?";
+    var shouldEndSession = false;
     callback(session.attributes,
         buildSpeechletResponseWithoutCard(speechOutput, repromptText, shouldEndSession));
 }
