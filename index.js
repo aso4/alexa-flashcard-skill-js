@@ -276,7 +276,7 @@ function onIntent(intentRequest, session, callback) {
         handleAnswerRequest(intent, session, callback);
     } else if ("AMAZON.NoIntent" === intentName) {
         handleAnswerRequest(intent, session, callback);
-    } else if ("AMAZON.StartOverIntent" === intentName) {
+    } else if ("AMAZON.StartOverIntent" === intentName || "LaunchIntent" === intentName) {
         getWelcomeResponse(callback);
     } else if ("AMAZON.RepeatIntent" === intentName) {
         handleRepeatRequest(intent, session, callback);
@@ -305,20 +305,18 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // ------- Skill specific business logic -------
 
-var ANSWER_COUNT = 1;
-var GAME_LENGTH = 5;
-// Be sure to change this for your skill.
-var CARD_TITLE = "U.S. State Capitals Flash Cards";
+var ANSWER_COUNT = 1; // 6 references in code
+var GAME_LENGTH = 5; // 3 references to this in code
+var CARD_TITLE = "Ruby Voice Flashcards";
 
 function getWelcomeResponse(callback) {
-    // Be sure to change this for your skill.
     var sessionAttributes = {},
         speechOutput = "Welcome to Ruby Voice Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.",
         shouldEndSession = false,
 
-        gameQuestions = populateGameQuestions(),
+        // gameQuestions = populateGameQuestions(),
         correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
-        roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
+        // roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
 
         currentQuestionIndex = 0,
         spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]),
@@ -342,67 +340,6 @@ function getWelcomeResponse(callback) {
     };
     callback(sessionAttributes,
         buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
-}
-
-function populateGameQuestions() {
-    var gameQuestions = [];
-    var indexList = [];
-    var index = questions.length;
-
-    if (GAME_LENGTH > index){
-        throw "Invalid Game Length.";
-    }
-
-    for (var i = 0; i < questions.length; i++){
-        indexList.push(i);
-    }
-
-    // Pick GAME_LENGTH random questions from the list to ask the user, make sure there are no repeats.
-    for (var j = 0; j < GAME_LENGTH; j++){
-        var rand = Math.floor(Math.random() * index);
-        index -= 1;
-
-        var temp = indexList[index];
-        indexList[index] = indexList[rand];
-        indexList[rand] = temp;
-        gameQuestions.push(indexList[index]);
-    }
-
-    return gameQuestions;
-}
-
-function populateRoundAnswers(gameQuestionIndexes, correctAnswerIndex, correctAnswerTargetLocation) {
-    // Get the answers for a given question, and place the correct answer at the spot marked by the
-    // correctAnswerTargetLocation variable. Note that you can have as many answers as you want but
-    // only ANSWER_COUNT will be selected.
-    var answers = [],
-        answersCopy = questions[gameQuestionIndexes[correctAnswerIndex]][Object.keys(questions[gameQuestionIndexes[correctAnswerIndex]])[0]],
-        temp, i;
-
-    var index = answersCopy.length;
-
-    if (index < ANSWER_COUNT){
-        throw "Not enough answers for question.";
-    }
-
-    // Shuffle the answers, excluding the first capital city.
-    for (var j = 1; j < answersCopy.length; j++){
-        var rand = Math.floor(Math.random() * (index - 1)) + 1;
-        index -= 1;
-
-        var temp = answersCopy[index];
-        answersCopy[index] = answersCopy[rand];
-        answersCopy[rand] = temp;
-    }
-
-    // Swap the correct answer into the target location
-    for (i = 0; i < ANSWER_COUNT; i++) {
-        answers[i] = answersCopy[i];
-    }
-    temp = answers[0];
-    answers[0] = answers[correctAnswerTargetLocation];
-    answers[correctAnswerTargetLocation] = temp;
-    return answers;
 }
 
 function handleAnswerRequest(intent, session, callback) {
@@ -456,9 +393,9 @@ function handleAnswerRequest(intent, session, callback) {
             var spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]);
             // Generate a random index for the correct answer, from 0 to 3
             correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT));
-            var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
+            // var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
 
-                questionIndexForSpeech = currentQuestionIndex + 1,
+            var questionIndexForSpeech = currentQuestionIndex + 1,
                 repromptText =  spokenQuestion ;
             for (var i = 0; i < ANSWER_COUNT; i++) {
                 repromptText +=  ""
@@ -507,11 +444,15 @@ function handleGetHelpRequest(intent, session, callback) {
 
     // Do not edit the help dialogue. This has been created by the Alexa team to demonstrate best practices.
 
-    var speechOutput = "I will ask you five multiple choice questions. Respond with the number of the answer. " +
-        "For example, say one, two, three, or four. To start a new game at any time, say, start game. " +
-        "To repeat the last question, say, repeat. " +
-        "Would you like to keep playing?",
-        repromptText = "To give an answer to a question, respond with the number of the answer . " +
+    var speechOutput = "help menu. to go to the main menu, say main menu or open main menu." +
+        "to open a flashcard, you can say start, new flashcard, start new flashcard, or give me a new flashcard." +
+        "once a flashcard is opened, you can say one, two, three or four." +
+        "you can also say the answer in sentence form." +
+        "for example, the answer is one, my answer is two, is it three?, or four is my answer." +
+        "if you don’t know the answer or would like to skip, you can say i don’t know or skip." +
+        "to repeat the question, say repeat, repeat the the question, say it again, or say the question again.",
+        repromptText = "To give an answer to a question, respond with the number of the answer " +
+        "or use the phrase . the answer is . with your answer . " +
         "Would you like to keep playing?";
     var shouldEndSession = false;
     callback(session.attributes,
