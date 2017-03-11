@@ -313,8 +313,7 @@ var CARD_TITLE = "U.S. State Capitals Flash Cards";
 function getWelcomeResponse(callback) {
     // Be sure to change this for your skill.
     var sessionAttributes = {},
-        speechOutput = "Let's learn about capitals in the United States. I will ask you about " + GAME_LENGTH.toString()
-            + " capitals, try to get as many right as you can. Just say the name of the capital. Let's begin. ",
+        speechOutput = "Welcome to Ruby Voice Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.",
         shouldEndSession = false,
 
         gameQuestions = populateGameQuestions(),
@@ -586,9 +585,6 @@ function buildResponse(sessionAttributes, speechletResponse) {
 //   deck = Flashcards.new
 //   @newQuestion = deck.getSample
 //
-//   if intent == "LaunchIntent"
-//     r.end_session = true;
-//     r.spoken_response = "Welcome to Ruby Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.";
 //   else if intent == "AMAZON.StartOverIntent";
 //
 //     r.end_session = false;
