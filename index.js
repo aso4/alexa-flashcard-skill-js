@@ -302,6 +302,187 @@ function onSessionEnded(sessionEndedRequest, session) {
     // Add any cleanup logic here
 }
 
+
+// ------- Skill specific business logic -------
+
+var ANSWER_COUNT = 1;
+var GAME_LENGTH = 5;
+// Be sure to change this for your skill.
+var CARD_TITLE = "U.S. State Capitals Flash Cards";
+
+function getWelcomeResponse(callback) {
+    // Be sure to change this for your skill.
+    var sessionAttributes = {},
+        speechOutput = "Let's learn about capitals in the United States. I will ask you about " + GAME_LENGTH.toString()
+            + " capitals, try to get as many right as you can. Just say the name of the capital. Let's begin. ",
+        shouldEndSession = false,
+
+        gameQuestions = populateGameQuestions(),
+        correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
+        roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
+
+        currentQuestionIndex = 0,
+        spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]),
+        repromptText = spokenQuestion,
+
+        i, j;
+
+    for (i = 0; i < ANSWER_COUNT; i++) {
+        repromptText += ""
+    }
+    speechOutput += repromptText;
+    sessionAttributes = {
+        "speechOutput": repromptText,
+        "repromptText": repromptText,
+        "currentQuestionIndex": currentQuestionIndex,
+        "correctAnswerIndex": correctAnswerIndex + 1,
+        "questions": gameQuestions,
+        "score": 0,
+        "correctAnswerText":
+            questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
+    };
+    callback(sessionAttributes,
+        buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+}
+
+function populateGameQuestions() {
+    var gameQuestions = [];
+    var indexList = [];
+    var index = questions.length;
+
+    if (GAME_LENGTH > index){
+        throw "Invalid Game Length.";
+    }
+
+    for (var i = 0; i < questions.length; i++){
+        indexList.push(i);
+    }
+
+    // Pick GAME_LENGTH random questions from the list to ask the user, make sure there are no repeats.
+    for (var j = 0; j < GAME_LENGTH; j++){
+        var rand = Math.floor(Math.random() * index);
+        index -= 1;
+
+        var temp = indexList[index];
+        indexList[index] = indexList[rand];
+        indexList[rand] = temp;
+        gameQuestions.push(indexList[index]);
+    }
+
+    return gameQuestions;
+}
+
+function populateRoundAnswers(gameQuestionIndexes, correctAnswerIndex, correctAnswerTargetLocation) {
+    // Get the answers for a given question, and place the correct answer at the spot marked by the
+    // correctAnswerTargetLocation variable. Note that you can have as many answers as you want but
+    // only ANSWER_COUNT will be selected.
+    var answers = [],
+        answersCopy = questions[gameQuestionIndexes[correctAnswerIndex]][Object.keys(questions[gameQuestionIndexes[correctAnswerIndex]])[0]],
+        temp, i;
+
+    var index = answersCopy.length;
+
+    if (index < ANSWER_COUNT){
+        throw "Not enough answers for question.";
+    }
+
+    // Shuffle the answers, excluding the first capital city.
+    for (var j = 1; j < answersCopy.length; j++){
+        var rand = Math.floor(Math.random() * (index - 1)) + 1;
+        index -= 1;
+
+        var temp = answersCopy[index];
+        answersCopy[index] = answersCopy[rand];
+        answersCopy[rand] = temp;
+    }
+
+    // Swap the correct answer into the target location
+    for (i = 0; i < ANSWER_COUNT; i++) {
+        answers[i] = answersCopy[i];
+    }
+    temp = answers[0];
+    answers[0] = answers[correctAnswerTargetLocation];
+    answers[correctAnswerTargetLocation] = temp;
+    return answers;
+}
+
+function handleAnswerRequest(intent, session, callback) {
+    var speechOutput = "";
+    var sessionAttributes = {};
+    var gameInProgress = session.attributes && session.attributes.questions;
+    var answerSlotValid = isAnswerSlotValid(intent);
+    var userGaveUp = intent.name === "DontKnowIntent";
+
+    if (!gameInProgress) {
+        // If the user responded with an answer but there is no game in progress, ask the user
+        // if they want to start a new game. Set a flag to track that we've prompted the user.
+        sessionAttributes.userPromptedToContinue = true;
+        speechOutput = "There is no game in progress. Do you want to start a new game? ";
+        callback(sessionAttributes,
+            buildSpeechletResponse(CARD_TITLE, speechOutput, speechOutput, false));
+    } else if (!answerSlotValid && !userGaveUp) {
+        // If the user provided answer isn't a number > 0 and < ANSWER_COUNT,
+        // return an error message to the user. Remember to guide the user into providing correct values.
+        var reprompt = session.attributes.speechOutput;
+        var speechOutput = "Your answer must be a known capital " + reprompt;
+        callback(session.attributes,
+            buildSpeechletResponse(CARD_TITLE, speechOutput, reprompt, false));
+    } else {
+        var gameQuestions = session.attributes.questions,
+            correctAnswerIndex = parseInt(session.attributes.correctAnswerIndex),
+            currentScore = parseInt(session.attributes.score),
+            currentQuestionIndex = parseInt(session.attributes.currentQuestionIndex),
+            correctAnswerText = session.attributes.correctAnswerText;
+
+        var speechOutputAnalysis = "";
+
+        if (answerSlotValid && intent.slots.Answer.value.toUpperCase() === correctAnswerText.toUpperCase()){
+            currentScore++;
+            speechOutputAnalysis = "correct. ";
+        } else {
+            if (!userGaveUp) {
+                speechOutputAnalysis = "wrong. "
+            }
+            speechOutputAnalysis += "The correct answer is " + correctAnswerText + ". ";
+        }
+        // if currentQuestionIndex is 4, we've reached 5 questions (zero-indexed) and can exit the game session
+        if (currentQuestionIndex == GAME_LENGTH - 1) {
+            speechOutput = userGaveUp ? "" : "That answer is ";
+            speechOutput += speechOutputAnalysis + "You got " + currentScore.toString() + " out of "
+                + GAME_LENGTH.toString() + " questions correct. Thank you for learning the capital cities of the United States!";
+            callback(session.attributes,
+                buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
+        } else {
+            currentQuestionIndex += 1;
+            var spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]);
+            // Generate a random index for the correct answer, from 0 to 3
+            correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT));
+            var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
+
+                questionIndexForSpeech = currentQuestionIndex + 1,
+                repromptText =  spokenQuestion ;
+            for (var i = 0; i < ANSWER_COUNT; i++) {
+                repromptText +=  ""
+            }
+            speechOutput += userGaveUp ? "" : "That answer is ";
+            speechOutput += speechOutputAnalysis + "Your score is " + currentScore.toString() + ". " + repromptText;
+
+            sessionAttributes = {
+                "speechOutput": repromptText,
+                "repromptText": repromptText,
+                "currentQuestionIndex": currentQuestionIndex,
+                "correctAnswerIndex": correctAnswerIndex + 1,
+                "questions": gameQuestions,
+                "score": currentScore,
+                "correctAnswerText":
+                    questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
+            };
+            callback(sessionAttributes,
+                buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
+        }
+    }
+}
+
 function handleRepeatRequest(intent, session, callback) {
     // Repeat the previous speechOutput and repromptText from the session attributes if available
     // else start a new game session
@@ -399,80 +580,80 @@ function buildResponse(sessionAttributes, speechletResponse) {
 }
 
 
-function handleAnswerRequest(intent, session, callback) {
-
-  @application_id = @echo_request.application_id
-  deck = Flashcards.new
-  @newQuestion = deck.getSample
-
-  if intent == "LaunchIntent"
-    r.end_session = true;
-    r.spoken_response = "Welcome to Ruby Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.";
-  else if intent == "AMAZON.StartOverIntent";
-
-    r.end_session = false;
-    r.spoken_response = "New card. Here is your next question: #{@newQuestion[2]}." +
-    "What is the correct answer? #{@newQuestion[3].join(", ")}. You can say one, two, three, or four. For more response options, say help.";
-    r.reprompt_text = "sorry, I couldnt catch what you were saying." +
-    "say the answer in a sentence. for example, the answer is one." +
-    "you can also say i don’t know, skip, or repeat the question";
-    add_session_attributes(r);
-  else if intent == "AMAZON.HelpIntent"
-    r.end_session = false;
-    @newQuestion = deck.getSample;
-    r.spoken_response = "help menu. to go to the main menu, say main menu or open main menu." +
-    "to open a flashcard, you can say start, new flashcard, start new flashcard, or give me a new flashcard." +
-    "once a flashcard is opened, you can say one, two, three or four." +
-    "you can also say the answer in sentence form." +
-    "for example, the answer is one, my answer is two, is it three?, or four is my answer." +
-    "if you don’t know the answer or would like to skip, you can say i don’t know or skip." +
-    "to repeat the question, say repeat, repeat the the question, say it again, or say the question again.";
-    add_session_attributes(r);
-  else if intent == "AnswerIntent" || intent == "AnswerOnlyIntent" || intent == "AMAZON.RepeatIntent" || intent == "DontKnowIntent";
-    r.end_session = false
-    if @echo_request.attributes["repeatQuestion"] != nil
-      if intent == "AMAZON.RepeatIntent"
-        r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"]);
-        r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"]);
-        r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"]);
-        r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"]);
-        r.spoken_response = "#{@echo_request.attributes["repeatQuestion"]}";
-
-      else if @echo_request.attributes["correctAnswerIndex"] == @echo_request.slots.answer.to_i
-        tracker.build_event(category: 'intent', action: intent, value: 2).track!
-        @newQuestion = deck.getSample;
-        r.spoken_response = "That is correct! Next question: #{@newQuestion[2]}." +
-        "What is the correct answer? #{@newQuestion[3].join(", ")}";
-        r.reprompt_text = "sorry, I couldn't catch what you were saying." +
-        "try saying the answer in a sentence. for example, the answer is one." +
-        "you can also say i don’t know, skip, or repeat the question";
-        r.card_title = "Correct Response";
-        r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}";
-        add_session_attributes(r);
-
-      else if intent == "DontKnowIntent" #alexa doesn't understand what you're saying
-        r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"])
-        r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"])
-        r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"])
-        r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"])
-        r.spoken_response = "sorry, I couldn't catch what you were saying." +
-        "try saying the answer in a sentence. for example, the answer is one." +
-        "you can also say i don’t know, skip, or repeat the question"
-      else
-        @newQuestion = deck.getSample
-        tracker.build_event(category: 'intent', action: intent, value: 3).track!
-        r.spoken_response = "Sorry, that is incorrect. The answer is #{@echo_request.attributes["correctAnswerIndex"]}, #{@echo_request.attributes["correctAnswerText"]}." +
-        "Let's try another question: #{@newQuestion[2]}." +
-        "What is the correct answer? #{@newQuestion[3].join(", ")}";
-        r.reprompt_text = "sorry, I couldn't catch what you were saying." +
-        "try saying the answer in a sentence. for example, the answer is one." +
-        "you can also say i don’t know, skip, or repeat the question";
-        r.card_title = "Incorrect Response.";
-        r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}";
-        add_session_attributes(r);
-
-    else
-      r.spoken_response = "ask me for a flashcard to begin. you can say new flashcard or help.";
-
-  render json: r.without_card;
-};
+// function handleAnswerRequest_old(intent, session, callback) {
+//
+//   @application_id = @echo_request.application_id
+//   deck = Flashcards.new
+//   @newQuestion = deck.getSample
+//
+//   if intent == "LaunchIntent"
+//     r.end_session = true;
+//     r.spoken_response = "Welcome to Ruby Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.";
+//   else if intent == "AMAZON.StartOverIntent";
+//
+//     r.end_session = false;
+//     r.spoken_response = "New card. Here is your next question: #{@newQuestion[2]}." +
+//     "What is the correct answer? #{@newQuestion[3].join(", ")}. You can say one, two, three, or four. For more response options, say help.";
+//     r.reprompt_text = "sorry, I couldnt catch what you were saying." +
+//     "say the answer in a sentence. for example, the answer is one." +
+//     "you can also say i don’t know, skip, or repeat the question";
+//     add_session_attributes(r);
+//   else if intent == "AMAZON.HelpIntent"
+//     r.end_session = false;
+//     @newQuestion = deck.getSample;
+//     r.spoken_response = "help menu. to go to the main menu, say main menu or open main menu." +
+//     "to open a flashcard, you can say start, new flashcard, start new flashcard, or give me a new flashcard." +
+//     "once a flashcard is opened, you can say one, two, three or four." +
+//     "you can also say the answer in sentence form." +
+//     "for example, the answer is one, my answer is two, is it three?, or four is my answer." +
+//     "if you don’t know the answer or would like to skip, you can say i don’t know or skip." +
+//     "to repeat the question, say repeat, repeat the the question, say it again, or say the question again.";
+//     add_session_attributes(r);
+//   else if intent == "AnswerIntent" || intent == "AnswerOnlyIntent" || intent == "AMAZON.RepeatIntent" || intent == "DontKnowIntent";
+//     r.end_session = false
+//     if @echo_request.attributes["repeatQuestion"] != nil
+//       if intent == "AMAZON.RepeatIntent"
+//         r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"]);
+//         r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"]);
+//         r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"]);
+//         r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"]);
+//         r.spoken_response = "#{@echo_request.attributes["repeatQuestion"]}";
+//
+//       else if @echo_request.attributes["correctAnswerIndex"] == @echo_request.slots.answer.to_i
+//         tracker.build_event(category: 'intent', action: intent, value: 2).track!
+//         @newQuestion = deck.getSample;
+//         r.spoken_response = "That is correct! Next question: #{@newQuestion[2]}." +
+//         "What is the correct answer? #{@newQuestion[3].join(", ")}";
+//         r.reprompt_text = "sorry, I couldn't catch what you were saying." +
+//         "try saying the answer in a sentence. for example, the answer is one." +
+//         "you can also say i don’t know, skip, or repeat the question";
+//         r.card_title = "Correct Response";
+//         r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}";
+//         add_session_attributes(r);
+//
+//       else if intent == "DontKnowIntent" #alexa doesn't understand what you're saying
+//         r.add_attribute("currentQuestionIndex", @echo_request.attributes["currentQuestionIndex"])
+//         r.add_attribute("correctAnswerText", @echo_request.attributes["correctAnswerText"])
+//         r.add_attribute("repeatQuestion", @echo_request.attributes["repeatQuestion"])
+//         r.add_attribute("correctAnswerIndex", @echo_request.attributes["correctAnswerIndex"])
+//         r.spoken_response = "sorry, I couldn't catch what you were saying." +
+//         "try saying the answer in a sentence. for example, the answer is one." +
+//         "you can also say i don’t know, skip, or repeat the question"
+//       else
+//         @newQuestion = deck.getSample
+//         tracker.build_event(category: 'intent', action: intent, value: 3).track!
+//         r.spoken_response = "Sorry, that is incorrect. The answer is #{@echo_request.attributes["correctAnswerIndex"]}, #{@echo_request.attributes["correctAnswerText"]}." +
+//         "Let's try another question: #{@newQuestion[2]}." +
+//         "What is the correct answer? #{@newQuestion[3].join(", ")}";
+//         r.reprompt_text = "sorry, I couldn't catch what you were saying." +
+//         "try saying the answer in a sentence. for example, the answer is one." +
+//         "you can also say i don’t know, skip, or repeat the question";
+//         r.card_title = "Incorrect Response.";
+//         r.card_content = "#{@newQuestion[2]}\n The correct answer is #{@newQuestion[4]}";
+//         add_session_attributes(r);
+//
+//     else
+//       r.spoken_response = "ask me for a flashcard to begin. you can say new flashcard or help.";
+//
+//   render json: r.without_card;
+// };
