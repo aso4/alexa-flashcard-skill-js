@@ -279,7 +279,7 @@ function onIntent(intentRequest, session, callback) {
     } else if ("LaunchIntent" === intentName) {
         getWelcomeResponse(callback);
     } else if ("AMAZON.StartOverIntent" === intentName) {
-        handleAnswerRequest(callback);
+        handleQuestionRequest(callback);
     } else if ("AMAZON.RepeatIntent" === intentName) {
         handleRepeatRequest(intent, session, callback);
     } else if ("AMAZON.HelpIntent" === intentName) {
@@ -350,19 +350,19 @@ function handleQuestionRequest(callback) {
     //     spokenQuestion = ,
         repromptText = speechOutput;
     //
-    // console.log(`getSample is ${getSample()}`);
+    console.log(`getSample is ${getSample()}`);
     //
     // speechOutput += repromptText;
-    // sessionAttributes = {
-    //     "speechOutput": repromptText,
-    //     "repromptText": repromptText,
-    //     "currentQuestionIndex": currentQuestionIndex,
-    //     "correctAnswerIndex": correctAnswerIndex,
-    //     "answerArray": answerArray,
-    //     "correctAnswerText": correctAnswerText;
-    // };
-    // callback(sessionAttributes,
-    //     buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+    sessionAttributes = {
+        "speechOutput": speechOutput,
+        "repromptText": repromptText,
+        "currentQuestionIndex": currentQuestionIndex,
+        "correctAnswerIndex": correctAnswerIndex,
+        "answerArray": answerArray,
+        "correctAnswerText": correctAnswerText
+    };
+    callback(sessionAttributes,
+        buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
 }
 
 function handleAnswerRequest(intent, session, callback) {
