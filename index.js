@@ -19,7 +19,7 @@
  * When editing your questions pay attention to your punctuation. Make sure you use question marks or periods.
  * Make sure the first answer is the correct one. Set at least 4 answers, any extras will be shuffled in.
  */
-var questions = [{
+var cards = [{
         question: "To create a second name for the variable or method.",
         answers: ["alias", "begin", "else", "elsif"]
     },
@@ -169,16 +169,21 @@ var questions = [{
     }
 ];
 
-var answers = [1, 3, 2, 2, 1, 4, 3, 3, 1, 3, 4, 2, 2, 2, 3, 1, 3, 4, 1,
+var listOfAnswers = [1, 3, 2, 2, 1, 4, 3, 3, 1, 3, 4, 2, 2, 2, 3, 1, 3, 4, 1,
     3, 1, 2, 4, 4, 1, 2, 3, 4, 2, 1, 4, 2, 3, 1, 4, 3, 1
 ];
 
-var getSample = function() {
-    sample = Math.floor(Math.random()*questions.length);
-    answerIndex = answers[sample];
-    question = cards[sample].question;
-    answers = cards[sample].answers;
-    answer = cards[sample].answers[answerIndex-1];
+function getSample(){
+    var sample = Math.floor(Math.random()*cards.length);
+    console.log(sample);
+    var answerIndex = listOfAnswers[sample];
+    console.log(answerIndex);
+    var question = cards[sample].question;
+    console.log(question);
+    var answers = cards[sample].answers;
+    console.log(answers);
+    var answer = cards[sample].answers[answerIndex-1];
+    console.log(answer);
     return [sample, answerIndex, question, answers, answer];
 };
 
@@ -305,8 +310,8 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 // ------- Skill specific business logic -------
 
-// var ANSWER_COUNT = 1; // 6 references in code
-// var GAME_LENGTH = 5; // 3 references to this in code
+var ANSWER_COUNT = 1; // 6 references in code
+var GAME_LENGTH = 5; // 3 references to this in code
 var CARD_TITLE = "Ruby Voice Flashcards";
 
 function getWelcomeResponse(callback) {
@@ -314,25 +319,27 @@ function getWelcomeResponse(callback) {
         speechOutput = "Welcome to Ruby Voice Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.",
         shouldEndSession = false,
 
-        // gameQuestions = populateGameQuestions(),
-        correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
-        // roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
+    //     gameQuestions = populateGameQuestions(),
+    //     correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
+    //     roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
+    //
+    //     currentQuestionIndex = 0,
+    //     spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]),
+        repromptText = speechOutput;
+    //
+    //     i, j;
+    //
+    // for (i = 0; i < ANSWER_COUNT; i++) {
+    //     repromptText += ""
+    // }
+    console.log(`getSample is ${getSample()}`);
 
-        currentQuestionIndex = 0,
-        spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]),
-        repromptText = spokenQuestion,
-
-        i, j;
-
-    for (i = 0; i < ANSWER_COUNT; i++) {
-        repromptText += ""
-    }
     speechOutput += repromptText;
     sessionAttributes = {
         "speechOutput": repromptText,
         "repromptText": repromptText,
-        "currentQuestionIndex": currentQuestionIndex,
-        "correctAnswerIndex": correctAnswerIndex + 1,
+        "currentQuestionIndex": 0,
+        "correctAnswerIndex": 0,
         // "questions": gameQuestions,
         "score": 0,
         // "correctAnswerText":
