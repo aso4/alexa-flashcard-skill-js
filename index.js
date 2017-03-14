@@ -175,15 +175,10 @@ var listOfAnswers = [1, 3, 2, 2, 1, 4, 3, 3, 1, 3, 4, 2, 2, 2, 3, 1, 3, 4, 1,
 
 function getSample(){
     var sample = Math.floor(Math.random()*cards.length);
-    console.log(sample);
     var answerIndex = listOfAnswers[sample];
-    console.log(answerIndex);
     var question = cards[sample].question;
-    console.log(question);
     var answers = cards[sample].answers;
-    console.log(answers);
     var answer = cards[sample].answers[answerIndex-1];
-    console.log(answer);
     return [sample, answerIndex, question, answers, answer];
 };
 
@@ -281,8 +276,10 @@ function onIntent(intentRequest, session, callback) {
         handleAnswerRequest(intent, session, callback);
     } else if ("AMAZON.NoIntent" === intentName) {
         handleAnswerRequest(intent, session, callback);
-    } else if ("AMAZON.StartOverIntent" === intentName || "LaunchIntent" === intentName) {
+    } else if ("LaunchIntent" === intentName) {
         getWelcomeResponse(callback);
+    } else if ("AMAZON.StartOverIntent" === intentName) {
+        handleAnswerRequest(callback);
     } else if ("AMAZON.RepeatIntent" === intentName) {
         handleRepeatRequest(intent, session, callback);
     } else if ("AMAZON.HelpIntent" === intentName) {
@@ -318,35 +315,54 @@ function getWelcomeResponse(callback) {
     var sessionAttributes = {},
         speechOutput = "Welcome to Ruby Voice Flashcards. Are you ready to test your Ruby knowledge? Say new flashcard or help to begin.",
         shouldEndSession = false,
-
-    //     gameQuestions = populateGameQuestions(),
-    //     correctAnswerIndex = Math.floor(Math.random() * (ANSWER_COUNT)), // Generate a random index for the correct answer, from 0 to 3
-    //     roundAnswers = populateRoundAnswers(gameQuestions, 0, correctAnswerIndex),
-    //
-    //     currentQuestionIndex = 0,
-    //     spokenQuestion = Object.keys(questions[gameQuestions[currentQuestionIndex]]),
         repromptText = speechOutput;
-    //
-    //     i, j;
-    //
-    // for (i = 0; i < ANSWER_COUNT; i++) {
-    //     repromptText += ""
-    // }
-    console.log(`getSample is ${getSample()}`);
 
     speechOutput += repromptText;
     sessionAttributes = {
         "speechOutput": repromptText,
         "repromptText": repromptText,
         "currentQuestionIndex": 0,
-        "correctAnswerIndex": 0,
-        // "questions": gameQuestions,
-        "score": 0,
-        // "correctAnswerText":
-            // questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
+        "correctAnswerIndex": 0
     };
     callback(sessionAttributes,
         buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+}
+
+function handleQuestionRequest(callback) {
+    var qaArray = getSample(),
+        sessionAttributes = {},
+        speechOutput = qaArray[2],
+        shouldEndSession = false,
+        currentQuestionIndex = qaArray[0],
+        correctAnswerIndex = qaArray[1],
+        answerArray = qaArray[3],
+        correctAnswerText = qaArray[4],
+        // [sample, answerIndex, question, answers, answer];
+        // num from sample: [0]
+        // question text: [2]
+        // answers: [3]
+        // answer: [4]
+        // answer index: [1]
+
+    //     gameQuestion = populateGameQuestions(),
+    //     correctAnswerIndex =
+    //     currentQuestionIndex = 0,
+    //     spokenQuestion = ,
+        repromptText = speechOutput;
+    //
+    // console.log(`getSample is ${getSample()}`);
+    //
+    // speechOutput += repromptText;
+    // sessionAttributes = {
+    //     "speechOutput": repromptText,
+    //     "repromptText": repromptText,
+    //     "currentQuestionIndex": currentQuestionIndex,
+    //     "correctAnswerIndex": correctAnswerIndex,
+    //     "answerArray": answerArray,
+    //     "correctAnswerText": correctAnswerText;
+    // };
+    // callback(sessionAttributes,
+    //     buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
 }
 
 function handleAnswerRequest(intent, session, callback) {
